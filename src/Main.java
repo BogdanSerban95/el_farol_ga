@@ -30,7 +30,7 @@ public class Main {
                     int nextState = ProbDistribution.randInt(transitionMatrix[state]);
                     double prob = strategy.getP()[nextState];
                     int decision = ProbDistribution.randInt(new double[]{1 - prob, prob});
-                    System.out.println(String.format("%d\t%d", nextState, decision));
+                    System.out.println(String.format("%d\t%d", decision, nextState));
                 }
                 break;
             case 3:
