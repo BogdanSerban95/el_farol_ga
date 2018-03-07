@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Main {
     public static void main(String[] args) {
         ArgParser parser = ArgParser.getInstance();
@@ -26,14 +28,13 @@ public class Main {
 
                 Strategy strategy = parseStrategy(strategyString);
                 for (int i = 0; i < reps; i++) {
-                    double[][] transitionMatrix = strategy.getTranzitionMatrix(crowded);
-                    int nextState = ProbDistribution.randInt(transitionMatrix[state]);
-                    double prob = strategy.getP()[nextState];
-                    int decision = ProbDistribution.randInt(new double[]{1 - prob, prob});
+                    int nextState = strategy.getNextState(state, crowded);
+                    int decision = strategy.getDecision(nextState);
                     System.out.println(String.format("%d\t%d", decision, nextState));
                 }
                 break;
             case 3:
+                System.out.println("1\t2\t3\t");
                 break;
         }
     }
