@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Strategy {
@@ -57,5 +58,43 @@ public class Strategy {
     public int getDecision(int state) {
         double prob = this.p[state];
         return prob > RandomWrapper.getRandom().nextDouble() ? 1 : 0;
+    }
+
+    public void mutate(double mutationRate) {
+        Random rnd = RandomWrapper.getRandom();
+//            Mutate attendances
+        for (int i = 0; i < h; i++) {
+            if (rnd.nextDouble() < mutationRate) {
+                double noise = rnd.nextGaussian() * 0.15;
+                if (this.p[i] + noise < 0)
+                    this.p[i] = 0;
+                if (this.p[i] + noise > 1)
+                    this.p[i] = 1;
+                this.p[i] += noise;
+            }
+        }
+//            Mutate transition matrices
+        mutateMatrix(rnd, this.a, mutationRate);
+        mutateMatrix(rnd, this.b, mutationRate);
+    }
+
+    private void mutateMatrix(Random rnd, double[][] mat, double mutationRate) {
+        for (int i = 0; i < h; i++) {
+            double sum = 0.0;
+            for (int j = 0; j < h; j++) {
+                if (rnd.nextDouble() < mutationRate) {
+                    double noise = rnd.nextGaussian() * 0.15;
+                    if (mat[i][j] + noise < 0)
+                        mat[i][j] = 0;
+                    if (mat[i][j] + noise > 1)
+                        mat[i][j] = 1;
+                    mat[i][j] += noise;
+                }
+                sum += mat[i][j];
+            }
+            for (int j = 0; j < h; j++) {
+                mat[i][j] /= sum;
+            }
+        }
     }
 }
