@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Main {
@@ -34,8 +35,24 @@ public class Main {
                 }
                 break;
             case 3:
-                System.out.println("1\t2\t3\t");
+                reps = Integer.parseInt(parser.getArgument(args, "-repetitions"));
+                int lambda = Integer.parseInt(parser.getArgument(args, "-lambda"));
+                int h = Integer.parseInt(parser.getArgument(args, "-h"));
+                int weeks = Integer.parseInt(parser.getArgument(args, "-weeks"));
+                int maxT = Integer.parseInt(parser.getArgument(args, "-max_t"));
+                for (int i = 0; i < reps; i++) {
+                    ElFarolBar bar = new ElFarolBar(lambda, h, weeks, maxT, 0.3, 0.5);
+                    bar.runGa();
+                }
                 break;
+        }
+    }
+
+    private static void printResults(ArrayList<Object> results) {
+        ArrayList<WeeklyAttendance> attendances = (ArrayList<WeeklyAttendance>) results.get(0);
+        int genCount = (int) results.get(1);
+        for (int i = 0; i < attendances.size(); i++) {
+            System.out.println(i + "\t" + genCount + "\t" + attendances.get(i).toString());
         }
     }
 

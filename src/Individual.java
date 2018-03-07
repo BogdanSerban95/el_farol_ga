@@ -10,6 +10,7 @@ public class Individual {
         this.strategy = strategy;
         this.states = new ArrayList<>();
         this.decisions = new ArrayList<>();
+        this.states.add(0);
     }
 
     public void setStrategy(Strategy strategy) {
@@ -30,7 +31,7 @@ public class Individual {
 
     public void initStrategy() {
         this.strategy.randomInit();
-        this.states.add(0);
+//        this.states.add(0);
     }
 
     public int getDecisionFromWeek(int week, int state) {
