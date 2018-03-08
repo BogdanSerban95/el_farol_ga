@@ -31,7 +31,6 @@ public class Individual {
 
     public void initStrategy() {
         this.strategy.randomInit();
-//        this.states.add(0);
     }
 
     public int getDecisionFromWeek(int week, int state) {

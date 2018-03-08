@@ -62,7 +62,6 @@ public class Strategy {
 
     public void mutate(double mutationRate) {
         Random rnd = RandomWrapper.getRandom();
-//            Mutate attendances
         for (int i = 0; i < h; i++) {
             if (rnd.nextDouble() < mutationRate) {
                 double noise = rnd.nextGaussian() * 0.15;
@@ -73,7 +72,6 @@ public class Strategy {
                 this.p[i] += noise;
             }
         }
-//            Mutate transition matrices
         mutateMatrix(rnd, this.a, mutationRate);
         mutateMatrix(rnd, this.b, mutationRate);
     }

@@ -11,10 +11,6 @@ public class WeeklyAttendance {
         this.individualAttendance = new int[populationSize];
     }
 
-    public int[] getIndividualAttendance() {
-        return individualAttendance;
-    }
-
     public int getTotalGoing() {
         return totalGoing;
     }

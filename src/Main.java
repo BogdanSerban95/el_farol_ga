@@ -1,12 +1,8 @@
-import java.util.ArrayList;
-import java.util.Random;
-
 public class Main {
     public static void main(String[] args) {
         ArgParser parser = ArgParser.getInstance();
         int question = Integer.parseInt(parser.getArgument(args, "-question"));
-//        int question = 2;
-        int reps = 1;
+        int reps;
         switch (question) {
             case 1:
                 String[] probStrings = parser.getArgument(args, "-prob").split(" ");
@@ -21,7 +17,6 @@ public class Main {
                 }
                 break;
             case 2:
-//                String strategyString = "2 0.1 0.0 1.0 1.0 0.0 1.0 0.9 0.1 0.9 0.1";
                 String strategyString = parser.getArgument(args, "-strategy");
                 int crowded = Integer.parseInt(parser.getArgument(args, "-crowded"));
                 int state = Integer.parseInt(parser.getArgument(args, "-state"));
@@ -45,14 +40,6 @@ public class Main {
                     bar.runGa();
                 }
                 break;
-        }
-    }
-
-    private static void printResults(ArrayList<Object> results) {
-        ArrayList<WeeklyAttendance> attendances = (ArrayList<WeeklyAttendance>) results.get(0);
-        int genCount = (int) results.get(1);
-        for (int i = 0; i < attendances.size(); i++) {
-            System.out.println(i + "\t" + genCount + "\t" + attendances.get(i).toString());
         }
     }
 

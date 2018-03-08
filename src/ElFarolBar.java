@@ -28,22 +28,20 @@ public class ElFarolBar {
             population.add(ind);
         }
 
-        this.evaluatePopulation();
+        this.evaluatePopulation(this.population);
     }
 
-    //    Evaluate - count the sum of the payoffs for each week for each individual(Strategy)
-    private void evaluatePopulation() {
-        this.currentAttendances = this.simulateAttendance();
-        this.computePayoffs(currentAttendances);
+    private void evaluatePopulation(ArrayList<Individual> individuals) {
+        this.currentAttendances = this.simulateAttendance(individuals);
+        this.computePayoffs(currentAttendances, individuals);
     }
 
-    //    Simulate - run each strategy over a number of weeks
-    private ArrayList<WeeklyAttendance> simulateAttendance() {
+    private ArrayList<WeeklyAttendance> simulateAttendance(ArrayList<Individual> individuals) {
         ArrayList<WeeklyAttendance> attendances = new ArrayList<>();
         for (int i = 0; i < weeks; i++) {
             WeeklyAttendance attendance = new WeeklyAttendance(this.lambda);
             for (int j = 0; j < this.lambda; j++) {
-                Individual individual = this.population.get(j);
+                Individual individual = individuals.get(j);
                 if (i == 0) {
                     attendance.addAttendance(j, individual.getDecisionFromWeek(i, 0));
                 } else {
@@ -57,10 +55,10 @@ public class ElFarolBar {
         return attendances;
     }
 
-    private void computePayoffs(ArrayList<WeeklyAttendance> attendances) {
+    private void computePayoffs(ArrayList<WeeklyAttendance> attendances, ArrayList<Individual> individuals) {
         for (int i = 0; i < this.lambda; i++) {
             int payoff = 0;
-            Individual currentIndividual = this.population.get(i);
+            Individual currentIndividual = individuals.get(i);
             for (int j = 0; j < this.weeks; j++) {
                 int crowded = attendances.get(j).isCrowded();
                 if (currentIndividual.getDecisions().get(j) == 1 && crowded == 0 || currentIndividual.getDecisions().get(j) == 0 && crowded == 1) {
@@ -71,7 +69,6 @@ public class ElFarolBar {
         }
     }
 
-    //    Selection - Fitness Proportionate Selection
     public Individual fitnessProportionateSelection() {
         double[] normFit = new double[this.lambda];
         double fitSum = 0.0;
@@ -86,7 +83,6 @@ public class ElFarolBar {
         return this.population.get(idx);
     }
 
-    //    Crossover - no idea how
     public Strategy crossover(double crossoverRate, Strategy parentA, Strategy parentB) {
         Strategy offspring = new Strategy(this.h);
         for (int i = 0; i < this.h; i++) {
@@ -102,23 +98,37 @@ public class ElFarolBar {
         return offspring;
     }
 
-    public Individual bestIndividual() {
-        Individual best = this.population.get(0);
-        for (Individual ind : this.population) {
-            if (best.getPayoff() < ind.getPayoff()) {
-                best = ind;
-            }
+    public void selectNextPopulation(ArrayList<Individual> offsprings) {
+        ArrayList<Individual> contestants = new ArrayList<>();
+        contestants.addAll(this.population);
+        contestants.addAll(offsprings);
+        contestants = sortContestants(contestants);
+        this.population.clear();
+        for (int i = 0; i < this.lambda; i++) {
+            this.population.add(contestants.get(i));
         }
-        return best;
+    }
+
+    public ArrayList<Individual> sortContestants(ArrayList<Individual> contestants) {
+        int k;
+        do {
+            k = 0;
+            for (int i = 0; i < contestants.size() - 1; i++) {
+                if (contestants.get(i).getPayoff() < contestants.get(i + 1).getPayoff()) {
+                    Individual aux = contestants.get(i);
+                    contestants.set(i, contestants.get(i + 1));
+                    contestants.set(i + 1, aux);
+                    k = 1;
+                }
+            }
+        } while (k == 1);
+        return contestants;
     }
 
     public ArrayList<Object> runGa() {
-        Individual bestIndividual = null;
-        int generationCount = 0;
 
         this.generateInitialPopulation();
         for (int i = 0; i < this.maxT; i++) {
-            bestIndividual = bestIndividual();
             ArrayList<Individual> newPopulation = new ArrayList<>();
             for (int j = 0; j < this.lambda; j++) {
                 Individual parentA = this.fitnessProportionateSelection();
@@ -128,12 +138,12 @@ public class ElFarolBar {
                 offspringStrategy.mutate(this.mutationRate);
                 newPopulation.add(new Individual(offspringStrategy));
             }
-            this.population = newPopulation;
-            this.evaluatePopulation();
+            this.evaluatePopulation(newPopulation);
+            this.selectNextPopulation(newPopulation);
+            this.evaluatePopulation(this.population);
             printResults(i);
-//            System.out.println(String.format("Generation: %d - best fit: %d", i, bestIndividual.getPayoff()));
         }
-        ArrayList<WeeklyAttendance> weeklyAttendances = this.simulateAttendance();
+        ArrayList<WeeklyAttendance> weeklyAttendances = this.simulateAttendance(population);
         ArrayList<Object> results = new ArrayList<>();
         results.add(weeklyAttendances);
         results.add(maxT);
