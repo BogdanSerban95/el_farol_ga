@@ -2,8 +2,7 @@ public class Main {
     public static void main(String[] args) {
         ArgParser parser = ArgParser.getInstance();
         int question = Integer.parseInt(parser.getArgument(args, "-question"));
-//        int question = 2;
-        int reps = 1;
+        int reps;
         switch (question) {
             case 1:
                 String[] probStrings = parser.getArgument(args, "-prob").split(" ");
@@ -18,7 +17,6 @@ public class Main {
                 }
                 break;
             case 2:
-//                String strategyString = "2 0.1 0.0 1.0 1.0 0.0 1.0 0.9 0.1 0.9 0.1";
                 String strategyString = parser.getArgument(args, "-strategy");
                 int crowded = Integer.parseInt(parser.getArgument(args, "-crowded"));
                 int state = Integer.parseInt(parser.getArgument(args, "-state"));
@@ -26,14 +24,21 @@ public class Main {
 
                 Strategy strategy = parseStrategy(strategyString);
                 for (int i = 0; i < reps; i++) {
-                    double[][] transitionMatrix = strategy.getTranzitionMatrix(crowded);
-                    int nextState = ProbDistribution.randInt(transitionMatrix[state]);
-                    double prob = strategy.getP()[nextState];
-                    int decision = ProbDistribution.randInt(new double[]{1 - prob, prob});
+                    int nextState = strategy.getNextState(state, crowded);
+                    int decision = strategy.getDecision(nextState);
                     System.out.println(String.format("%d\t%d", decision, nextState));
                 }
                 break;
             case 3:
+                reps = Integer.parseInt(parser.getArgument(args, "-repetitions"));
+                int lambda = Integer.parseInt(parser.getArgument(args, "-lambda"));
+                int h = Integer.parseInt(parser.getArgument(args, "-h"));
+                int weeks = Integer.parseInt(parser.getArgument(args, "-weeks"));
+                int maxT = Integer.parseInt(parser.getArgument(args, "-max_t"));
+                for (int i = 0; i < reps; i++) {
+                    ElFarolBar bar = new ElFarolBar(lambda, h, weeks, maxT, 0.3, 0.5);
+                    bar.runGa();
+                }
                 break;
         }
     }
