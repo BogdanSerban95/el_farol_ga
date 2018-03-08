@@ -31,13 +31,14 @@ public class Tests {
 //            System.out.println();
 //        }
 
-//        ElFarolBar bar = new ElFarolBar(10, 10, 10, 100, 0.4, 0.8);
+        ElFarolBar bar = new ElFarolBar(100, 10, 20, 100, 0.4, 0.8, true, 4);
 //        for (int i = 0; i < 5; i++) {
 //            bar.generateInitialPopulation();
 //            Individual best = bar.bestIndividual();
 //            System.out.println();
 //        }
-//        bar.runGa();
+        bar.setExperimentMode(true);
+        System.out.println(bar.runGa());
 
 //        double[] probs = new double[]{0.12, 0.23, 0.30, 0.15, 0.10, 0.05, 0.05};
 //        HashMap<Integer, Integer> counts = new HashMap<>();

@@ -36,7 +36,7 @@ public class Main {
                 int weeks = Integer.parseInt(parser.getArgument(args, "-weeks"));
                 int maxT = Integer.parseInt(parser.getArgument(args, "-max_t"));
                 for (int i = 0; i < reps; i++) {
-                    ElFarolBar bar = new ElFarolBar(lambda, h, weeks, maxT, 0.3, 0.5);
+                    ElFarolBar bar = new ElFarolBar(lambda, h, weeks, maxT, 0.3, 0.5, false, 0);
                     bar.runGa();
                 }
                 break;

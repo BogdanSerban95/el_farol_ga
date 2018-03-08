@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 
 public class ElFarolBar {
+    private final boolean tournSelection;
+    private final int tournamentSize;
     private int lambda;
     private int h;
     private int weeks;
@@ -9,15 +11,21 @@ public class ElFarolBar {
     private double crossoverRate;
     private double mutationRate;
     private ArrayList<WeeklyAttendance> currentAttendances;
+    private boolean experimentMode = false;
 
-
-    public ElFarolBar(int lambda, int h, int weeks, int maxT, double crossoverRate, double mutationRate) {
+    public ElFarolBar(int lambda, int h, int weeks, int maxT, double crossoverRate, double mutationRate, boolean tournamentSelection, int tournamentSize) {
         this.lambda = lambda;
         this.h = h;
         this.weeks = weeks;
         this.maxT = maxT;
         this.crossoverRate = crossoverRate;
         this.mutationRate = mutationRate;
+        this.tournSelection = tournamentSelection;
+        this.tournamentSize = tournamentSize;
+    }
+
+    public void setExperimentMode(boolean val) {
+        this.experimentMode = val;
     }
 
     public void generateInitialPopulation() {
@@ -83,6 +91,25 @@ public class ElFarolBar {
         return this.population.get(idx);
     }
 
+    private Individual tournamentSelection() {
+        Individual winner = new Individual(null);
+        winner.setPayoff(0);
+        ArrayList<Individual> winners = new ArrayList<>();
+        for (int i = 0; i < this.tournamentSize; i++) {
+            int contestantIdx = RandomWrapper.getRandom().nextInt(this.lambda);
+            Individual contestant = this.population.get(contestantIdx);
+            if (contestant.getPayoff() > winner.getPayoff()) {
+                winner = contestant;
+                winners.clear();
+                winners.add(winner);
+            } else if (contestant.getPayoff() == winner.getPayoff()) {
+                winners.add(contestant);
+            }
+        }
+
+        return winners.get(RandomWrapper.getRandom().nextInt(winners.size()));
+    }
+
     public Strategy crossover(double crossoverRate, Strategy parentA, Strategy parentB) {
         Strategy offspring = new Strategy(this.h);
         for (int i = 0; i < this.h; i++) {
@@ -125,14 +152,21 @@ public class ElFarolBar {
         return contestants;
     }
 
-    public ArrayList<Object> runGa() {
+    public int runGa() {
 
         this.generateInitialPopulation();
         for (int i = 0; i < this.maxT; i++) {
             ArrayList<Individual> newPopulation = new ArrayList<>();
             for (int j = 0; j < this.lambda; j++) {
-                Individual parentA = this.fitnessProportionateSelection();
-                Individual parentB = this.fitnessProportionateSelection();
+                Individual parentA = null;
+                Individual parentB = null;
+                if (tournSelection) {
+                    parentA = this.tournamentSelection();
+                    parentB = this.tournamentSelection();
+                } else {
+                    parentA = this.fitnessProportionateSelection();
+                    parentB = this.fitnessProportionateSelection();
+                }
 
                 Strategy offspringStrategy = crossover(this.crossoverRate, parentA.getStrategy(), parentB.getStrategy());
                 offspringStrategy.mutate(this.mutationRate);
@@ -141,13 +175,18 @@ public class ElFarolBar {
             this.evaluatePopulation(newPopulation);
             this.selectNextPopulation(newPopulation);
             this.evaluatePopulation(this.population);
-            printResults(i);
+            if (!experimentMode) {
+                printResults(i);
+            }
         }
-        ArrayList<WeeklyAttendance> weeklyAttendances = this.simulateAttendance(population);
-        ArrayList<Object> results = new ArrayList<>();
-        results.add(weeklyAttendances);
-        results.add(maxT);
-        return results;
+
+        int averageAttendance = 0;
+        if (experimentMode) {
+            for (WeeklyAttendance attendance : this.currentAttendances) {
+                averageAttendance += attendance.getTotalGoing();
+            }
+        }
+        return averageAttendance / this.weeks;
     }
 
     public void printResults(int generation) {
