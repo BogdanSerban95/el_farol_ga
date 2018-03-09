@@ -21,7 +21,7 @@ public class WeeklyAttendance {
     }
 
     public int isCrowded() {
-        return (double) totalGoing / this.popSize >= 0.6 ? 1 : 0;
+        return ((double) totalGoing / this.popSize) >= 0.6 ? 1 : 0;
     }
 
     @Override
