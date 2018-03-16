@@ -1,4 +1,4 @@
-public class Main {
+public class bas782 {
     public static void main(String[] args) {
         ArgParser parser = ArgParser.getInstance();
         int question = Integer.parseInt(parser.getArgument(args, "-question"));
