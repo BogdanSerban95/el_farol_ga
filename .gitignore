@@ -1,5 +1,8 @@
 /out
 /.idea
 
+/.idea/workspace.xml
+/niso3-bas782
+
 *.zip
 *.class
